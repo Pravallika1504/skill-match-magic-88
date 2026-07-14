@@ -130,30 +130,67 @@ export const analyzeResume = createServerFn({ method: "POST" })
     const clamp = (v: any) => Math.max(0, Math.min(100, Math.round(Number(v) || 0)));
     const score = clamp(parsed.score);
 
-    // Update resume metadata
+    const clamp = (v: any) => Math.max(0, Math.min(100, Math.round(Number(v) || 0)));
+
+    // Weighted ATS score per spec
+    const keyword_match = clamp(parsed.keyword_match);
+    const skill_match = clamp(parsed.skill_match);
+    const experience_match = clamp(parsed.experience_match);
+    const education_match = clamp(parsed.education_match);
+    const project_match = clamp(parsed.project_match);
+    const certification_match = clamp(parsed.certification_match);
+    const formatting_score = clamp(parsed.formatting_score);
+    const grammar_score = clamp(parsed.grammar_score);
+    const job_match_score = clamp(parsed.job_match_score);
+
+    const ats_score = clamp(
+      keyword_match * 0.30 +
+        skill_match * 0.25 +
+        experience_match * 0.15 +
+        education_match * 0.10 +
+        project_match * 0.10 +
+        certification_match * 0.05 +
+        formatting_score * 0.05,
+    );
+    const score = ats_score;
+
+    // Persist enriched analysis JSON with computed sub-scores
+    const analysis = {
+      ...parsed,
+      keyword_match,
+      skill_match,
+      experience_match,
+      education_match,
+      project_match,
+      certification_match,
+      formatting_score,
+      grammar_score,
+      job_match_score,
+      ats_score,
+    };
+
     await supabase
       .from("resumes")
       .update({
         candidate_name: parsed.candidate_name ?? null,
         candidate_email: parsed.candidate_email ?? null,
-        parsed,
+        parsed: analysis,
         raw_text: parsed.raw_text_excerpt ?? null,
       })
       .eq("id", resume.id);
 
-    const status: "shortlisted" | "reviewed" =
-      score >= (job.shortlist_threshold ?? 80) ? "shortlisted" : "reviewed";
+    const shortlisted = score >= (job.shortlist_threshold ?? 80);
+    const status: "shortlisted" | "reviewed" = shortlisted ? "shortlisted" : "reviewed";
 
-    // Upsert screening (unique on job_id + resume_id)
     const payload = {
       job_id: job.id,
       resume_id: resume.id,
       candidate_id: resume.user_id,
       score,
-      ats_score: clamp(parsed.ats_score),
-      skill_match: clamp(parsed.skill_match),
-      experience_match: clamp(parsed.experience_match),
-      education_match: clamp(parsed.education_match),
+      ats_score,
+      skill_match,
+      experience_match,
+      education_match,
       matched_skills: parsed.matched_skills ?? [],
       missing_skills: parsed.missing_skills ?? [],
       missing_keywords: parsed.missing_keywords ?? [],
@@ -161,7 +198,7 @@ export const analyzeResume = createServerFn({ method: "POST" })
       weaknesses: parsed.weaknesses ?? [],
       recommendations: parsed.recommendations ?? [],
       summary: parsed.summary ?? null,
-      analysis: parsed,
+      analysis,
       status,
     };
 
@@ -173,8 +210,9 @@ export const analyzeResume = createServerFn({ method: "POST" })
     if (sErr) throw new Error(sErr.message);
 
     void userId;
-    return { screeningId: screening.id, score, status };
+    return { screeningId: screening.id, score, ats_score, status, shortlisted };
   });
+
 
 const ScheduleInput = z.object({
   screeningId: z.string().uuid(),
