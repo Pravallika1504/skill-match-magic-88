@@ -15,9 +15,13 @@ import { Route as HowItWorksRouteImport } from './routes/how-it-works'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedInterviewsRouteImport } from './routes/_authenticated/interviews'
+import { Route as AuthenticatedHistoryRouteImport } from './routes/_authenticated/history'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedJobsIndexRouteImport } from './routes/_authenticated/jobs.index'
+import { Route as AuthenticatedResumesIdRouteImport } from './routes/_authenticated/resumes.$id'
 import { Route as AuthenticatedJobsNewRouteImport } from './routes/_authenticated/jobs.new'
+import { Route as AuthenticatedJobsIdRouteImport } from './routes/_authenticated/jobs.$id'
 
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
@@ -48,6 +52,16 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedInterviewsRoute = AuthenticatedInterviewsRouteImport.update({
+  id: '/interviews',
+  path: '/interviews',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedHistoryRoute = AuthenticatedHistoryRouteImport.update({
+  id: '/history',
+  path: '/history',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -58,9 +72,19 @@ const AuthenticatedJobsIndexRoute = AuthenticatedJobsIndexRouteImport.update({
   path: '/jobs/',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedResumesIdRoute = AuthenticatedResumesIdRouteImport.update({
+  id: '/resumes/$id',
+  path: '/resumes/$id',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedJobsNewRoute = AuthenticatedJobsNewRouteImport.update({
   id: '/jobs/new',
   path: '/jobs/new',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedJobsIdRoute = AuthenticatedJobsIdRouteImport.update({
+  id: '/jobs/$id',
+  path: '/jobs/$id',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 
@@ -71,7 +95,11 @@ export interface FileRoutesByFullPath {
   '/live-demo': typeof LiveDemoRoute
   '/reset-password': typeof ResetPasswordRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/history': typeof AuthenticatedHistoryRoute
+  '/interviews': typeof AuthenticatedInterviewsRoute
+  '/jobs/$id': typeof AuthenticatedJobsIdRoute
   '/jobs/new': typeof AuthenticatedJobsNewRoute
+  '/resumes/$id': typeof AuthenticatedResumesIdRoute
   '/jobs/': typeof AuthenticatedJobsIndexRoute
 }
 export interface FileRoutesByTo {
@@ -81,7 +109,11 @@ export interface FileRoutesByTo {
   '/live-demo': typeof LiveDemoRoute
   '/reset-password': typeof ResetPasswordRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/history': typeof AuthenticatedHistoryRoute
+  '/interviews': typeof AuthenticatedInterviewsRoute
+  '/jobs/$id': typeof AuthenticatedJobsIdRoute
   '/jobs/new': typeof AuthenticatedJobsNewRoute
+  '/resumes/$id': typeof AuthenticatedResumesIdRoute
   '/jobs': typeof AuthenticatedJobsIndexRoute
 }
 export interface FileRoutesById {
@@ -93,7 +125,11 @@ export interface FileRoutesById {
   '/live-demo': typeof LiveDemoRoute
   '/reset-password': typeof ResetPasswordRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/history': typeof AuthenticatedHistoryRoute
+  '/_authenticated/interviews': typeof AuthenticatedInterviewsRoute
+  '/_authenticated/jobs/$id': typeof AuthenticatedJobsIdRoute
   '/_authenticated/jobs/new': typeof AuthenticatedJobsNewRoute
+  '/_authenticated/resumes/$id': typeof AuthenticatedResumesIdRoute
   '/_authenticated/jobs/': typeof AuthenticatedJobsIndexRoute
 }
 export interface FileRouteTypes {
@@ -105,7 +141,11 @@ export interface FileRouteTypes {
     | '/live-demo'
     | '/reset-password'
     | '/dashboard'
+    | '/history'
+    | '/interviews'
+    | '/jobs/$id'
     | '/jobs/new'
+    | '/resumes/$id'
     | '/jobs/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -115,7 +155,11 @@ export interface FileRouteTypes {
     | '/live-demo'
     | '/reset-password'
     | '/dashboard'
+    | '/history'
+    | '/interviews'
+    | '/jobs/$id'
     | '/jobs/new'
+    | '/resumes/$id'
     | '/jobs'
   id:
     | '__root__'
@@ -126,7 +170,11 @@ export interface FileRouteTypes {
     | '/live-demo'
     | '/reset-password'
     | '/_authenticated/dashboard'
+    | '/_authenticated/history'
+    | '/_authenticated/interviews'
+    | '/_authenticated/jobs/$id'
     | '/_authenticated/jobs/new'
+    | '/_authenticated/resumes/$id'
     | '/_authenticated/jobs/'
   fileRoutesById: FileRoutesById
 }
@@ -183,6 +231,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/interviews': {
+      id: '/_authenticated/interviews'
+      path: '/interviews'
+      fullPath: '/interviews'
+      preLoaderRoute: typeof AuthenticatedInterviewsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/history': {
+      id: '/_authenticated/history'
+      path: '/history'
+      fullPath: '/history'
+      preLoaderRoute: typeof AuthenticatedHistoryRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
       path: '/dashboard'
@@ -197,6 +259,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedJobsIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/resumes/$id': {
+      id: '/_authenticated/resumes/$id'
+      path: '/resumes/$id'
+      fullPath: '/resumes/$id'
+      preLoaderRoute: typeof AuthenticatedResumesIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/jobs/new': {
       id: '/_authenticated/jobs/new'
       path: '/jobs/new'
@@ -204,18 +273,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedJobsNewRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/jobs/$id': {
+      id: '/_authenticated/jobs/$id'
+      path: '/jobs/$id'
+      fullPath: '/jobs/$id'
+      preLoaderRoute: typeof AuthenticatedJobsIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedHistoryRoute: typeof AuthenticatedHistoryRoute
+  AuthenticatedInterviewsRoute: typeof AuthenticatedInterviewsRoute
+  AuthenticatedJobsIdRoute: typeof AuthenticatedJobsIdRoute
   AuthenticatedJobsNewRoute: typeof AuthenticatedJobsNewRoute
+  AuthenticatedResumesIdRoute: typeof AuthenticatedResumesIdRoute
   AuthenticatedJobsIndexRoute: typeof AuthenticatedJobsIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedHistoryRoute: AuthenticatedHistoryRoute,
+  AuthenticatedInterviewsRoute: AuthenticatedInterviewsRoute,
+  AuthenticatedJobsIdRoute: AuthenticatedJobsIdRoute,
   AuthenticatedJobsNewRoute: AuthenticatedJobsNewRoute,
+  AuthenticatedResumesIdRoute: AuthenticatedResumesIdRoute,
   AuthenticatedJobsIndexRoute: AuthenticatedJobsIndexRoute,
 }
 
