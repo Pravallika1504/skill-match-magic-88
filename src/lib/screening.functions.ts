@@ -128,9 +128,8 @@ export const analyzeResume = createServerFn({ method: "POST" })
     }
 
     const clamp = (v: any) => Math.max(0, Math.min(100, Math.round(Number(v) || 0)));
-    const score = clamp(parsed.score);
 
-    const clamp = (v: any) => Math.max(0, Math.min(100, Math.round(Number(v) || 0)));
+
 
     // Weighted ATS score per spec
     const keyword_match = clamp(parsed.keyword_match);
