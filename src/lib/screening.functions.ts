@@ -79,8 +79,8 @@ export const analyzeResume = createServerFn({ method: "POST" })
 
     const { text } = await generateText({
       model,
+      system: SYSTEM,
       messages: [
-        { role: "system", content: SYSTEM },
         {
           role: "user",
           content: [
@@ -95,6 +95,7 @@ export const analyzeResume = createServerFn({ method: "POST" })
         },
       ],
     });
+
 
     // Extract JSON (model sometimes wraps in fences despite instruction)
     const cleaned = text
