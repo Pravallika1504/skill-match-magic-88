@@ -26,6 +26,7 @@ export function AppHeader() {
             <>
               <Link to="/dashboard" className="text-muted-foreground hover:text-foreground">Dashboard</Link>
               <Link to="/jobs" className="text-muted-foreground hover:text-foreground">Jobs</Link>
+              <Link to="/chat" className="text-muted-foreground hover:text-foreground">AI Chat</Link>
               <Link to="/history" className="text-muted-foreground hover:text-foreground">History</Link>
             </>
           )}
