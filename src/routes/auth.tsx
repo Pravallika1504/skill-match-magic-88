@@ -23,7 +23,10 @@ import {
 
 type Mode = "signin" | "signup" | "forgot";
 
-const search = z.object({ mode: z.enum(["signin", "signup", "forgot"]).optional() });
+const search = z.object({
+  mode: z.enum(["signin", "signup", "forgot"]).optional(),
+  next: z.string().optional(),
+});
 
 export const Route = createFileRoute("/auth")({
   validateSearch: (s) => search.parse(s),
@@ -34,9 +37,16 @@ const emailSchema = z.string().trim().email("Enter a valid email").max(255);
 const passwordSchema = z.string().min(6, "At least 6 characters").max(72);
 const nameSchema = z.string().trim().min(1, "Name is required").max(100);
 
+/** Only allow same-origin relative paths as a post-login redirect target. */
+function safeNext(next?: string) {
+  if (!next || !next.startsWith("/") || next.startsWith("//")) return null;
+  return next;
+}
+
 function AuthPage() {
   const nav = useNavigate();
-  const { mode } = useSearch({ from: "/auth" });
+  const { mode, next } = useSearch({ from: "/auth" });
+  const redirectTo = safeNext(next);
   const [tab, setTab] = useState<Mode>(mode ?? "signin");
 
   const [email, setEmail] = useState("");
@@ -51,11 +61,16 @@ function AuthPage() {
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
-      if (data.session) nav({ to: "/dashboard" });
+      if (!data.session) return;
+      if (redirectTo) window.location.replace(redirectTo);
+      else nav({ to: "/dashboard" });
     });
-  }, [nav]);
+  }, [nav, redirectTo]);
 
-  const goDashboard = () => nav({ to: "/dashboard" });
+  const goDashboard = () => {
+    if (redirectTo) window.location.replace(redirectTo);
+    else nav({ to: "/dashboard" });
+  };
 
   const validate = (m: Mode) => {
     const e: Record<string, string> = {};
