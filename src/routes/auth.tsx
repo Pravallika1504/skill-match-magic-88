@@ -108,7 +108,7 @@ function AuthPage() {
       email,
       password,
       options: {
-        emailRedirectTo: `${window.location.origin}/dashboard`,
+        emailRedirectTo: `${window.location.origin}${redirectTo ?? "/dashboard"}`,
         data: { full_name: fullName, role },
       },
     });
