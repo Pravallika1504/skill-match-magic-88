@@ -1,5 +1,4 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { AppHeader } from "@/components/app-header";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ScoreRing } from "@/components/score-ring";
@@ -51,7 +50,6 @@ const sample = {
 function LiveDemo() {
   return (
     <div className="min-h-screen bg-gradient-subtle">
-      <AppHeader />
       <section className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
         <div className="mb-8">
           <Badge className="bg-gradient-primary text-primary-foreground"><Sparkles className="mr-1 h-3 w-3" /> Live demo</Badge>
