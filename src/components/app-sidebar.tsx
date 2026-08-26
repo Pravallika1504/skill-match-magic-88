@@ -18,7 +18,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-export const navSections = [
+type NavItem = { title: string; url: string; icon: typeof LayoutDashboard };
+
+export const navSections: { label: string; items: NavItem[] }[] = [
   {
     label: "Main",
     items: [
@@ -33,7 +35,7 @@ export const navSections = [
     label: "Product",
     items: [{ title: "How It Works", url: "/how-it-works", icon: CircleHelp }],
   },
-] as const;
+];
 
 export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
   const { theme, toggle } = useTheme();
