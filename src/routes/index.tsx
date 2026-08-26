@@ -15,6 +15,14 @@ export const Route = createFileRoute("/")({
 });
 
 function Landing() {
+  const nav = useNavigate();
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      if (data.session) nav({ to: "/dashboard" });
+    });
+  }, [nav]);
+
   return (
     <div className="min-h-screen">
       <AppHeader />
