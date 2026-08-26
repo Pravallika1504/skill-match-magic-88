@@ -3,6 +3,8 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { generateText } from "ai";
 import { z } from "zod";
 import { createLovableAiGatewayProvider } from "./ai-gateway.server";
+import { parseLooseJson } from "./json-repair";
+
 
 const AnalyzeInput = z.object({
   jobId: z.string().uuid(),
@@ -112,20 +114,21 @@ export const analyzeResume = createServerFn({ method: "POST" })
     });
 
 
-    // Extract JSON (model sometimes wraps in fences despite instruction)
-    const cleaned = text
-      .replace(/^```json\s*/i, "")
-      .replace(/^```\s*/i, "")
-      .replace(/\s*```\s*$/i, "")
-      .trim();
+    // Extract JSON (model sometimes wraps in fences or emits slightly invalid JSON)
     let parsed: any;
     try {
-      parsed = JSON.parse(cleaned);
+      parsed = parseLooseJson(text);
     } catch {
-      const match = cleaned.match(/\{[\s\S]*\}/);
-      if (!match) throw new Error("AI returned unparseable output");
-      parsed = JSON.parse(match[0]);
+      // One repair pass: ask the model to re-emit strictly valid JSON.
+      const { text: repaired } = await generateText({
+        model,
+        system:
+          "You convert malformed JSON into strictly valid JSON. Output ONLY the JSON object, no fences, no commentary. Preserve all data.",
+        messages: [{ role: "user", content: text.slice(0, 30000) }],
+      });
+      parsed = parseLooseJson(repaired);
     }
+
 
     const clamp = (v: any) => Math.max(0, Math.min(100, Math.round(Number(v) || 0)));
 
