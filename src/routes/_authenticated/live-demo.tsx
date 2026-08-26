@@ -6,7 +6,7 @@ import { ScoreRing } from "@/components/score-ring";
 import { Progress } from "@/components/ui/progress";
 import { CheckCircle2, AlertCircle, Sparkles } from "lucide-react";
 
-export const Route = createFileRoute("/live-demo")({
+export const Route = createFileRoute("/_authenticated/live-demo")({
   head: () => ({
     meta: [
       { title: "Live demo — SkillMatch AI" },

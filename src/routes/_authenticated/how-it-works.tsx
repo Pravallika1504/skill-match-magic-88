@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { FileText, Upload, Brain, Trophy, MessageSquare, Calendar, CheckCircle2, ArrowRight } from "lucide-react";
 
-export const Route = createFileRoute("/how-it-works")({
+export const Route = createFileRoute("/_authenticated/how-it-works")({
   head: () => ({
     meta: [
       { title: "How it works — SkillMatch AI" },
