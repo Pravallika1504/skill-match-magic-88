@@ -1,11 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { AppHeader } from "@/components/app-header";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { FileText, Upload, Brain, Trophy, MessageSquare, Calendar, CheckCircle2, ArrowRight } from "lucide-react";
 
-export const Route = createFileRoute("/how-it-works")({
+export const Route = createFileRoute("/_authenticated/how-it-works")({
   head: () => ({
     meta: [
       { title: "How it works — SkillMatch AI" },
@@ -29,7 +28,6 @@ const steps = [
 function HowItWorks() {
   return (
     <div className="min-h-screen">
-      <AppHeader />
       <section className="mx-auto max-w-5xl px-4 py-16 sm:px-6">
         <div className="text-center">
           <Badge variant="secondary" className="mb-4">The full workflow</Badge>

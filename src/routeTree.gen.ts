@@ -11,12 +11,12 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as McpRouteImport } from './routes/mcp'
-import { Route as LiveDemoRouteImport } from './routes/live-demo'
-import { Route as HowItWorksRouteImport } from './routes/how-it-works'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedLiveDemoRouteImport } from './routes/_authenticated/live-demo'
 import { Route as AuthenticatedInterviewsRouteImport } from './routes/_authenticated/interviews'
+import { Route as AuthenticatedHowItWorksRouteImport } from './routes/_authenticated/how-it-works'
 import { Route as AuthenticatedHistoryRouteImport } from './routes/_authenticated/history'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedChatRouteImport } from './routes/_authenticated/chat'
@@ -39,16 +39,6 @@ const McpRoute = McpRouteImport.update({
   path: '/mcp',
   getParentRoute: () => rootRouteImport,
 } as any)
-const LiveDemoRoute = LiveDemoRouteImport.update({
-  id: '/live-demo',
-  path: '/live-demo',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const HowItWorksRoute = HowItWorksRouteImport.update({
-  id: '/how-it-works',
-  path: '/how-it-works',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
@@ -63,9 +53,19 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedLiveDemoRoute = AuthenticatedLiveDemoRouteImport.update({
+  id: '/live-demo',
+  path: '/live-demo',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedInterviewsRoute = AuthenticatedInterviewsRouteImport.update({
   id: '/interviews',
   path: '/interviews',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedHowItWorksRoute = AuthenticatedHowItWorksRouteImport.update({
+  id: '/how-it-works',
+  path: '/how-it-works',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedHistoryRoute = AuthenticatedHistoryRouteImport.update({
@@ -130,8 +130,6 @@ const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
-  '/how-it-works': typeof HowItWorksRoute
-  '/live-demo': typeof LiveDemoRoute
   '/mcp': typeof McpRoute
   '/reset-password': typeof ResetPasswordRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
@@ -139,7 +137,9 @@ export interface FileRoutesByFullPath {
   '/chat': typeof AuthenticatedChatRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/history': typeof AuthenticatedHistoryRoute
+  '/how-it-works': typeof AuthenticatedHowItWorksRoute
   '/interviews': typeof AuthenticatedInterviewsRoute
+  '/live-demo': typeof AuthenticatedLiveDemoRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/jobs/$id': typeof AuthenticatedJobsIdRoute
@@ -150,8 +150,6 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
-  '/how-it-works': typeof HowItWorksRoute
-  '/live-demo': typeof LiveDemoRoute
   '/mcp': typeof McpRoute
   '/reset-password': typeof ResetPasswordRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
@@ -159,7 +157,9 @@ export interface FileRoutesByTo {
   '/chat': typeof AuthenticatedChatRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/history': typeof AuthenticatedHistoryRoute
+  '/how-it-works': typeof AuthenticatedHowItWorksRoute
   '/interviews': typeof AuthenticatedInterviewsRoute
+  '/live-demo': typeof AuthenticatedLiveDemoRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/jobs/$id': typeof AuthenticatedJobsIdRoute
@@ -172,8 +172,6 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
-  '/how-it-works': typeof HowItWorksRoute
-  '/live-demo': typeof LiveDemoRoute
   '/mcp': typeof McpRoute
   '/reset-password': typeof ResetPasswordRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
@@ -181,7 +179,9 @@ export interface FileRoutesById {
   '/_authenticated/chat': typeof AuthenticatedChatRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/history': typeof AuthenticatedHistoryRoute
+  '/_authenticated/how-it-works': typeof AuthenticatedHowItWorksRoute
   '/_authenticated/interviews': typeof AuthenticatedInterviewsRoute
+  '/_authenticated/live-demo': typeof AuthenticatedLiveDemoRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/_authenticated/jobs/$id': typeof AuthenticatedJobsIdRoute
@@ -194,8 +194,6 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
-    | '/how-it-works'
-    | '/live-demo'
     | '/mcp'
     | '/reset-password'
     | '/.mcp/list-tools'
@@ -203,7 +201,9 @@ export interface FileRouteTypes {
     | '/chat'
     | '/dashboard'
     | '/history'
+    | '/how-it-works'
     | '/interviews'
+    | '/live-demo'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
     | '/jobs/$id'
@@ -214,8 +214,6 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
-    | '/how-it-works'
-    | '/live-demo'
     | '/mcp'
     | '/reset-password'
     | '/.mcp/list-tools'
@@ -223,7 +221,9 @@ export interface FileRouteTypes {
     | '/chat'
     | '/dashboard'
     | '/history'
+    | '/how-it-works'
     | '/interviews'
+    | '/live-demo'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
     | '/jobs/$id'
@@ -235,8 +235,6 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/auth'
-    | '/how-it-works'
-    | '/live-demo'
     | '/mcp'
     | '/reset-password'
     | '/.mcp/list-tools'
@@ -244,7 +242,9 @@ export interface FileRouteTypes {
     | '/_authenticated/chat'
     | '/_authenticated/dashboard'
     | '/_authenticated/history'
+    | '/_authenticated/how-it-works'
     | '/_authenticated/interviews'
+    | '/_authenticated/live-demo'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
     | '/_authenticated/jobs/$id'
@@ -257,8 +257,6 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
-  HowItWorksRoute: typeof HowItWorksRoute
-  LiveDemoRoute: typeof LiveDemoRoute
   McpRoute: typeof McpRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   Char91DotmcpChar93ListToolsRoute: typeof Char91DotmcpChar93ListToolsRoute
@@ -283,20 +281,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof McpRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/live-demo': {
-      id: '/live-demo'
-      path: '/live-demo'
-      fullPath: '/live-demo'
-      preLoaderRoute: typeof LiveDemoRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/how-it-works': {
-      id: '/how-it-works'
-      path: '/how-it-works'
-      fullPath: '/how-it-works'
-      preLoaderRoute: typeof HowItWorksRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/auth': {
       id: '/auth'
       path: '/auth'
@@ -318,11 +302,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/live-demo': {
+      id: '/_authenticated/live-demo'
+      path: '/live-demo'
+      fullPath: '/live-demo'
+      preLoaderRoute: typeof AuthenticatedLiveDemoRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/interviews': {
       id: '/_authenticated/interviews'
       path: '/interviews'
       fullPath: '/interviews'
       preLoaderRoute: typeof AuthenticatedInterviewsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/how-it-works': {
+      id: '/_authenticated/how-it-works'
+      path: '/how-it-works'
+      fullPath: '/how-it-works'
+      preLoaderRoute: typeof AuthenticatedHowItWorksRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/history': {
@@ -409,7 +407,9 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedChatRoute: typeof AuthenticatedChatRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedHistoryRoute: typeof AuthenticatedHistoryRoute
+  AuthenticatedHowItWorksRoute: typeof AuthenticatedHowItWorksRoute
   AuthenticatedInterviewsRoute: typeof AuthenticatedInterviewsRoute
+  AuthenticatedLiveDemoRoute: typeof AuthenticatedLiveDemoRoute
   AuthenticatedJobsIdRoute: typeof AuthenticatedJobsIdRoute
   AuthenticatedJobsNewRoute: typeof AuthenticatedJobsNewRoute
   AuthenticatedResumesIdRoute: typeof AuthenticatedResumesIdRoute
@@ -420,7 +420,9 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedChatRoute: AuthenticatedChatRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedHistoryRoute: AuthenticatedHistoryRoute,
+  AuthenticatedHowItWorksRoute: AuthenticatedHowItWorksRoute,
   AuthenticatedInterviewsRoute: AuthenticatedInterviewsRoute,
+  AuthenticatedLiveDemoRoute: AuthenticatedLiveDemoRoute,
   AuthenticatedJobsIdRoute: AuthenticatedJobsIdRoute,
   AuthenticatedJobsNewRoute: AuthenticatedJobsNewRoute,
   AuthenticatedResumesIdRoute: AuthenticatedResumesIdRoute,
@@ -434,8 +436,6 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
-  HowItWorksRoute: HowItWorksRoute,
-  LiveDemoRoute: LiveDemoRoute,
   McpRoute: McpRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   Char91DotmcpChar93ListToolsRoute: Char91DotmcpChar93ListToolsRoute,
