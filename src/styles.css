@@ -157,6 +157,7 @@
   --sidebar-ring: oklch(0.72 0.2 275);
 
   --gradient-hero: linear-gradient(135deg, oklch(0.4 0.2 265) 0%, oklch(0.5 0.22 285) 50%, oklch(0.45 0.18 200) 100%);
+  --gradient-subtle: linear-gradient(180deg, oklch(0.14 0.02 265), oklch(0.18 0.03 275));
   --shadow-elegant: 0 20px 50px -20px color-mix(in oklab, var(--primary) 50%, transparent);
   --shadow-glow: 0 0 80px color-mix(in oklab, var(--primary-glow) 45%, transparent);
   --shadow-card: 0 1px 3px rgba(0,0,0,.4), 0 12px 32px -12px color-mix(in oklab, var(--primary) 25%, transparent);
@@ -165,6 +166,9 @@
 @layer base {
   * {
     border-color: var(--color-border);
+  }
+  html {
+    background-color: var(--color-background);
   }
   body {
     background-color: var(--color-background);
