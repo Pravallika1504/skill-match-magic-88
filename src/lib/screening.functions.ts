@@ -3,6 +3,8 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { generateText } from "ai";
 import { z } from "zod";
 import { createLovableAiGatewayProvider } from "./ai-gateway.server";
+import { parseLooseJson } from "./json-repair";
+
 
 const AnalyzeInput = z.object({
   jobId: z.string().uuid(),
