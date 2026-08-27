@@ -17,7 +17,7 @@ function Interviews() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("interviews")
-        .select("id, scheduled_at, mode, meeting_link, venue, interviewer, notes, screenings(id, score, jobs(title, company), resumes(candidate_name, file_name))")
+        .select("id, scheduled_at, mode, meeting_link, venue, interviewer, notes, status, screenings(id, score, ats_score, skill_match, experience_match, matched_skills, missing_skills, missing_keywords, strengths, weaknesses, recommendations, summary, jobs(title, company, description), resumes(candidate_name, file_name))")
         .order("scheduled_at", { ascending: true });
       if (error) throw error;
       return data ?? [];
