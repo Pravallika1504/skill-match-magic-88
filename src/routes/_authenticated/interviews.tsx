@@ -48,7 +48,7 @@ function Interviews() {
               </div>
               <div className="flex items-center gap-2">
                 <Badge variant="outline" className="capitalize">{iv.status ?? "scheduled"}</Badge>
-                <Badge className="bg-gradient-primary text-primary-foreground">Score {iv.screenings?.score}</Badge>
+                <Badge className="bg-gradient-primary text-primary-foreground">Score {screening?.score}</Badge>
               </div>
             </div>
             <div className="mt-4 grid gap-2 text-sm sm:grid-cols-2">
@@ -58,7 +58,7 @@ function Interviews() {
                 {iv.mode} · {iv.meeting_link || iv.venue || "TBD"}
               </div>
               {iv.interviewer && <div className="flex items-center gap-2"><User className="h-4 w-4 text-primary" /> {iv.interviewer}</div>}
-              <div className="flex items-center gap-2"><Briefcase className="h-4 w-4 text-primary" /> {iv.screenings?.jobs?.title ?? "Role"}</div>
+              <div className="flex items-center gap-2"><Briefcase className="h-4 w-4 text-primary" /> {job?.title ?? "Role"}</div>
             </div>
             {iv.mode === "online" && iv.meeting_link && (
               <Button asChild className="mt-4 bg-gradient-primary text-primary-foreground">
