@@ -126,7 +126,8 @@ function Interviews() {
               </AccordionItem>
             </Accordion>
           </Card>
-        ))}
+        );
+        })}
         {(data?.length ?? 0) === 0 && (
           <Card className="shadow-card p-8 text-center text-sm text-muted-foreground">No interviews scheduled yet.</Card>
         )}
