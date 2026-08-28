@@ -246,5 +246,29 @@ export const scheduleInterview = createServerFn({ method: "POST" })
       .single();
     if (error) throw new Error(error.message);
     await supabase.from("screenings").update({ status: "interview" }).eq("id", data.screeningId);
+
+    // Create in-app notification for the candidate
+    const { data: screening } = await supabase
+      .from("screenings")
+      .select("candidate_id, jobs(title)")
+      .eq("id", data.screeningId)
+      .maybeSingle();
+
+    if (screening?.candidate_id) {
+      const jobTitle = (screening.jobs as any)?.title ?? "a role";
+      const dt = new Date(data.scheduled_at);
+      const dateStr = dt.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
+      const timeStr = dt.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+      const body = `${jobTitle}\n${dateStr}\n${timeStr}\n${data.mode === "online" ? "Online" : "Offline"}${data.interviewer ? `\nInterviewer: ${data.interviewer}` : ""}`;
+
+      await supabase.from("notifications").insert({
+        user_id: screening.candidate_id,
+        type: "interview_scheduled",
+        title: "New Interview Scheduled",
+        body,
+        interview_id: iv.id,
+      });
+    }
+
     return iv;
   });

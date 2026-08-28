@@ -104,7 +104,7 @@ function AuthPage() {
     ev.preventDefault();
     if (!validate("signup")) return;
     setLoading(true);
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -112,9 +112,26 @@ function AuthPage() {
         data: { full_name: fullName, role },
       },
     });
+    if (error) {
+      setLoading(false);
+      return toast.error(error.message);
+    }
+    if (data.session) {
+      setLoading(false);
+      toast.success("Account created! Welcome.");
+      goDashboard();
+      return;
+    }
+    // No session returned — email confirmation may be required.
+    // Attempt immediate sign-in since the auto-confirm trigger should have
+    // confirmed the email already.
+    const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
     setLoading(false);
-    if (error) return toast.error(error.message);
-    toast.success("Account created! Check your email if confirmation is required.");
+    if (signInError) {
+      toast.success("Account created! Check your email if confirmation is required.");
+      return;
+    }
+    toast.success("Account created! Welcome.");
     goDashboard();
   };
 

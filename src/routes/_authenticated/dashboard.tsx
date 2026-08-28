@@ -9,7 +9,7 @@ import { Progress } from "@/components/ui/progress";
 import {
   BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, PieChart, Pie, Cell, Legend
 } from "recharts";
-import { Briefcase, FileText, Trophy, Users, TrendingUp, ArrowRight, Calendar } from "lucide-react";
+import { Briefcase, FileText, Trophy, Users, TrendingUp, ArrowRight, Calendar, Bell } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   component: Dashboard,
@@ -17,6 +17,29 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
 
 function Dashboard() {
   const { user, role } = useCurrentUser();
+
+  const { data: notifications } = useQuery({
+    queryKey: ["interview-notifications", user?.id],
+    enabled: !!user && role === "student",
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("notifications")
+        .select("id, title, body, read, created_at")
+        .eq("user_id", user!.id)
+        .eq("read", false)
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+
+  const markNotificationsRead = async () => {
+    const unread = notifications ?? [];
+    if (unread.length === 0) return;
+    for (const n of unread) {
+      await supabase.from("notifications").update({ read: true }).eq("id", n.id);
+    }
+  };
 
   const { data: stats } = useQuery({
     queryKey: ["dashboard-stats", user?.id, role],
@@ -183,8 +206,20 @@ function Dashboard() {
           </Card>
           <Card className="shadow-card p-6">
             <div className="mb-2 flex items-center gap-2 text-sm font-semibold"><Calendar className="h-4 w-4 text-primary" /> Interviews</div>
+            {(notifications ?? []).length > 0 && (
+              <div className="mb-3 space-y-2">
+                {(notifications ?? []).map((n: any) => (
+                  <div key={n.id} className="rounded-lg border border-primary/30 bg-accent/40 p-3">
+                    <div className="flex items-center gap-2 text-sm font-semibold text-primary">
+                      <Bell className="h-3.5 w-3.5" /> {n.title}
+                    </div>
+                    <p className="mt-1 whitespace-pre-line text-xs text-muted-foreground">{n.body}</p>
+                  </div>
+                ))}
+              </div>
+            )}
             <p className="text-xs text-muted-foreground">Scheduled interviews will appear here once a recruiter invites you.</p>
-            <Button asChild variant="outline" className="mt-4 w-full"><Link to="/interviews">View interviews</Link></Button>
+            <Button asChild variant="outline" className="mt-4 w-full" onClick={markNotificationsRead}><Link to="/interviews">View interviews</Link></Button>
           </Card>
         </div>
       )}
