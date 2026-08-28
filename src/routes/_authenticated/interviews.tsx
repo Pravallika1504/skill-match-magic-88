@@ -11,6 +11,11 @@ export const Route = createFileRoute("/_authenticated/interviews")({
   component: Interviews,
 });
 
+function normalizeOne<T>(rel: T | T[] | null | undefined): T | undefined {
+  if (Array.isArray(rel)) return rel[0];
+  return rel ?? undefined;
+}
+
 function Interviews() {
   const { data } = useQuery({
     queryKey: ["interviews"],
