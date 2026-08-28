@@ -76,19 +76,19 @@ function Interviews() {
                 </AccordionTrigger>
                 <AccordionContent>
                   <div className="grid gap-4 text-sm md:grid-cols-2">
-                    {iv.screenings?.summary && (
-                      <div className="md:col-span-2 rounded-lg bg-muted/50 p-3 text-muted-foreground">{iv.screenings.summary}</div>
+                    {screening?.summary && (
+                      <div className="md:col-span-2 rounded-lg bg-muted/50 p-3 text-muted-foreground">{screening.summary}</div>
                     )}
                     <div>
                       <div className="mb-2 text-xs font-medium uppercase text-muted-foreground">Lead with these strengths</div>
                       <div className="flex flex-wrap gap-2">
-                        {(iv.screenings?.matched_skills ?? []).map((x: string) => (
+                        {(screening?.matched_skills ?? []).map((x: string) => (
                           <Badge key={x} className="bg-success/15 text-success">{x}</Badge>
                         ))}
-                        {(iv.screenings?.matched_skills ?? []).length === 0 && <span className="text-muted-foreground">—</span>}
+                        {(screening?.matched_skills ?? []).length === 0 && <span className="text-muted-foreground">—</span>}
                       </div>
                       <ul className="mt-3 space-y-1">
-                        {(iv.screenings?.strengths ?? []).map((x: string) => (
+                        {(screening?.strengths ?? []).map((x: string) => (
                           <li key={x} className="flex gap-2"><CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-success" />{x}</li>
                         ))}
                       </ul>
@@ -96,29 +96,29 @@ function Interviews() {
                     <div>
                       <div className="mb-2 text-xs font-medium uppercase text-muted-foreground">Prepare answers for these gaps</div>
                       <div className="flex flex-wrap gap-2">
-                        {[...(iv.screenings?.missing_skills ?? []), ...(iv.screenings?.missing_keywords ?? [])].map((x: string) => (
+                        {[...(screening?.missing_skills ?? []), ...(screening?.missing_keywords ?? [])].map((x: string) => (
                           <Badge key={x} variant="outline" className="border-destructive/40 text-destructive">{x}</Badge>
                         ))}
-                        {[...(iv.screenings?.missing_skills ?? []), ...(iv.screenings?.missing_keywords ?? [])].length === 0 && <span className="text-muted-foreground">—</span>}
+                        {[...(screening?.missing_skills ?? []), ...(screening?.missing_keywords ?? [])].length === 0 && <span className="text-muted-foreground">—</span>}
                       </div>
                       <ul className="mt-3 space-y-1">
-                        {(iv.screenings?.weaknesses ?? []).map((x: string) => (
+                        {(screening?.weaknesses ?? []).map((x: string) => (
                           <li key={x} className="flex gap-2"><AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-warning" />{x}</li>
                         ))}
                       </ul>
                     </div>
-                    {(iv.screenings?.recommendations ?? []).length > 0 && (
+                    {(screening?.recommendations ?? []).length > 0 && (
                       <div className="md:col-span-2">
                         <div className="mb-2 text-xs font-medium uppercase text-muted-foreground">Action plan before the interview</div>
                         <ol className="list-decimal space-y-1 pl-5 marker:text-primary">
-                          {(iv.screenings?.recommendations ?? []).map((r: string) => <li key={r}>{r}</li>)}
+                          {(screening?.recommendations ?? []).map((r: string) => <li key={r}>{r}</li>)}
                         </ol>
                       </div>
                     )}
-                    {iv.screenings?.jobs?.description && (
+                    {job?.description && (
                       <div className="md:col-span-2">
                         <div className="mb-2 text-xs font-medium uppercase text-muted-foreground">Job description to review</div>
-                        <p className="whitespace-pre-wrap text-muted-foreground line-clamp-6">{iv.screenings.jobs.description}</p>
+                        <p className="whitespace-pre-wrap text-muted-foreground line-clamp-6">{job.description}</p>
                       </div>
                     )}
                   </div>
