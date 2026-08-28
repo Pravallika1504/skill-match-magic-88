@@ -35,12 +35,16 @@ function Interviews() {
       <p className="text-sm text-muted-foreground">Upcoming and past interview invitations.</p>
 
       <div className="mt-6 grid gap-3">
-        {(data ?? []).map((iv: any) => (
+        {(data ?? []).map((iv: any) => {
+          const screening = normalizeOne(iv.screenings);
+          const job = normalizeOne(screening?.jobs);
+          const resume = normalizeOne(screening?.resumes);
+          return (
           <Card key={iv.id} className="shadow-card border-border/60 p-5">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
-                <div className="text-sm font-semibold">{iv.screenings?.jobs?.title} @ {iv.screenings?.jobs?.company ?? "—"}</div>
-                <div className="text-xs text-muted-foreground">Candidate: {iv.screenings?.resumes?.candidate_name ?? iv.screenings?.resumes?.file_name}</div>
+                <div className="text-sm font-semibold">{job?.title} @ {job?.company ?? "—"}</div>
+                <div className="text-xs text-muted-foreground">Candidate: {resume?.candidate_name ?? resume?.file_name}</div>
               </div>
               <div className="flex items-center gap-2">
                 <Badge variant="outline" className="capitalize">{iv.status ?? "scheduled"}</Badge>
