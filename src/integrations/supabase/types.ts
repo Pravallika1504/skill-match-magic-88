@@ -97,7 +97,6 @@ export type Database = {
           notes: string | null
           scheduled_at: string
           screening_id: string
-          status: string
           venue: string | null
         }
         Insert: {
@@ -109,7 +108,6 @@ export type Database = {
           notes?: string | null
           scheduled_at: string
           screening_id: string
-          status?: string
           venue?: string | null
         }
         Update: {
@@ -121,7 +119,6 @@ export type Database = {
           notes?: string | null
           scheduled_at?: string
           screening_id?: string
-          status?: string
           venue?: string | null
         }
         Relationships: [
