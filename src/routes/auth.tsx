@@ -122,13 +122,13 @@ function AuthPage() {
       goDashboard();
       return;
     }
-    // No session returned — email confirmation is disabled, so sign in
-    // immediately with the credentials just registered.
+    // No session returned — email confirmation may be required.
+    // Attempt immediate sign-in since the auto-confirm trigger should have
+    // confirmed the email already.
     const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
     setLoading(false);
     if (signInError) {
-      toast.success("Account created! Please sign in.");
-      setTab("signin");
+      toast.success("Account created! Check your email if confirmation is required.");
       return;
     }
     toast.success("Account created! Welcome.");
