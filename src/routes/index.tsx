@@ -1,5 +1,7 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useEffect } from "react";
 import { AppHeader } from "@/components/app-header";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -13,6 +15,24 @@ export const Route = createFileRoute("/")({
 });
 
 function Landing() {
+  const nav = useNavigate();
+
+  // Post-login redirect: as soon as a session is hydrated here (e.g. after an
+  // OAuth callback returns to this page), open the Dashboard automatically.
+  useEffect(() => {
+    let cancelled = false;
+    supabase.auth.getSession().then(({ data }) => {
+      if (!cancelled && data.session) nav({ to: "/dashboard" });
+    });
+    const { data: sub } = supabase.auth.onAuthStateChange((event) => {
+      if (event === "SIGNED_IN") nav({ to: "/dashboard" });
+    });
+    return () => {
+      cancelled = true;
+      sub.subscription.unsubscribe();
+    };
+  }, [nav]);
+
   return (
     <div className="min-h-screen">
       <AppHeader />
