@@ -120,14 +120,21 @@ function AuthPage() {
 
   const onForgot = async (ev: React.FormEvent) => {
     ev.preventDefault();
-    if (!validate("forgot")) return;
+    const e: Record<string, string> = {};
+    const pwR = passwordSchema.safeParse(password);
+    if (!pwR.success) e.password = pwR.error.issues[0].message;
+    if (password !== confirmPassword) e.confirmPassword = "Passwords do not match";
+    setErrors(e);
+    if (Object.keys(e).length > 0) return;
     setLoading(true);
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/reset-password`,
-    });
+    const { error } = await supabase.auth.updateUser({ password });
     setLoading(false);
     if (error) return toast.error(error.message);
-    toast.success("Reset link sent to your email.");
+    await supabase.auth.signOut();
+    toast.success("Password updated successfully. Please sign in.");
+    setPassword("");
+    setConfirmPassword("");
+    setTab("signin");
   };
 
   const onGoogle = async () => {
@@ -220,7 +227,7 @@ function AuthPage() {
                   {tab === "signup"
                     ? "Free forever plan — no card required."
                     : tab === "forgot"
-                      ? "We'll email you a secure reset link."
+                      ? "Enter and confirm your new password."
                       : "Sign in to continue screening resumes."}
                 </p>
               </div>
@@ -370,17 +377,25 @@ function AuthPage() {
 
               {tab === "forgot" && (
                 <form onSubmit={onForgot} className="space-y-4">
-                  <Field
-                    id="email"
-                    label="Email"
-                    icon={<Mail className="h-4 w-4" />}
-                    type="email"
-                    value={email}
-                    onChange={setEmail}
-                    error={errors.email}
-                    placeholder="you@example.com"
+                  <PasswordField
+                    id="newPassword"
+                    label="New Password"
+                    value={password}
+                    onChange={setPassword}
+                    show={showPw}
+                    setShow={setShowPw}
+                    error={errors.password}
                   />
-                  <SubmitButton loading={loading}>Send reset link</SubmitButton>
+                  <PasswordField
+                    id="confirmNewPassword"
+                    label="Confirm Password"
+                    value={confirmPassword}
+                    onChange={setConfirmPassword}
+                    show={showPw}
+                    setShow={setShowPw}
+                    error={errors.confirmPassword}
+                  />
+                  <SubmitButton loading={loading}>Reset Password</SubmitButton>
                   <p className="text-center text-sm text-muted-foreground">
                     Remembered it?{" "}
                     <button
