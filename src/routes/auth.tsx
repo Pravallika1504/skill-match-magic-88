@@ -120,14 +120,21 @@ function AuthPage() {
 
   const onForgot = async (ev: React.FormEvent) => {
     ev.preventDefault();
-    if (!validate("forgot")) return;
+    const e: Record<string, string> = {};
+    const pwR = passwordSchema.safeParse(password);
+    if (!pwR.success) e.password = pwR.error.issues[0].message;
+    if (password !== confirmPassword) e.confirmPassword = "Passwords do not match";
+    setErrors(e);
+    if (Object.keys(e).length > 0) return;
     setLoading(true);
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/reset-password`,
-    });
+    const { error } = await supabase.auth.updateUser({ password });
     setLoading(false);
     if (error) return toast.error(error.message);
-    toast.success("Reset link sent to your email.");
+    await supabase.auth.signOut();
+    toast.success("Password updated successfully. Please sign in.");
+    setPassword("");
+    setConfirmPassword("");
+    setTab("signin");
   };
 
   const onGoogle = async () => {
