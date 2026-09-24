@@ -59,13 +59,37 @@ function AuthPage() {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
+  const [recovery, setRecovery] = useState(false);
+
   useEffect(() => {
+    if (mode === "forgot") {
+      const hash = new URLSearchParams(window.location.hash.slice(1));
+      const qs = new URLSearchParams(window.location.search);
+      const errDesc = hash.get("error_description") || qs.get("error_description");
+      if (errDesc) {
+        toast.error("Reset link is invalid or has expired. Please request a new one.");
+        return;
+      }
+      const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
+        if ((event === "PASSWORD_RECOVERY" || event === "SIGNED_IN") && session) {
+          setRecovery(true);
+          setEmail(session.user.email ?? "");
+        }
+      });
+      supabase.auth.getSession().then(({ data }) => {
+        if (data.session) {
+          setRecovery(true);
+          setEmail(data.session.user.email ?? "");
+        }
+      });
+      return () => sub.subscription.unsubscribe();
+    }
     supabase.auth.getSession().then(({ data }) => {
       if (!data.session) return;
       if (redirectTo) window.location.replace(redirectTo);
       else nav({ to: "/dashboard" });
     });
-  }, [nav, redirectTo]);
+  }, [nav, redirectTo, mode]);
 
   const goDashboard = () => {
     if (redirectTo) window.location.replace(redirectTo);
@@ -121,19 +145,44 @@ function AuthPage() {
   const onForgot = async (ev: React.FormEvent) => {
     ev.preventDefault();
     const e: Record<string, string> = {};
-    const pwR = passwordSchema.safeParse(password);
-    if (!pwR.success) e.password = pwR.error.issues[0].message;
-    if (password !== confirmPassword) e.confirmPassword = "Passwords do not match";
+    const emailR = emailSchema.safeParse(email);
+    if (!emailR.success) e.email = emailR.error.issues[0].message;
+    if (recovery) {
+      const pwR = passwordSchema.safeParse(password);
+      if (!pwR.success) e.password = pwR.error.issues[0].message;
+      if (password !== confirmPassword) e.confirmPassword = "Passwords do not match";
+    }
     setErrors(e);
     if (Object.keys(e).length > 0) return;
     setLoading(true);
+    if (!recovery) {
+      const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+        redirectTo: `${window.location.origin}/auth?mode=forgot`,
+      });
+      setLoading(false);
+      if (error) return toast.error(error.message);
+      return toast.success("Check your email for the password recovery link.");
+    }
+    const { data: s } = await supabase.auth.getSession();
+    if (!s.session) {
+      setLoading(false);
+      setRecovery(false);
+      return toast.error("Recovery session is invalid or expired. Please request a new reset link.");
+    }
+    if (s.session.user.email?.toLowerCase() !== email.trim().toLowerCase()) {
+      setLoading(false);
+      setErrors({ email: "Email does not match the recovery link" });
+      return;
+    }
     const { error } = await supabase.auth.updateUser({ password });
     setLoading(false);
     if (error) return toast.error(error.message);
     await supabase.auth.signOut();
     toast.success("Password updated successfully. Please sign in.");
+    setRecovery(false);
     setPassword("");
     setConfirmPassword("");
+    window.history.replaceState(null, "", "/auth");
     setTab("signin");
   };
 
@@ -377,25 +426,41 @@ function AuthPage() {
 
               {tab === "forgot" && (
                 <form onSubmit={onForgot} className="space-y-4">
-                  <PasswordField
-                    id="newPassword"
-                    label="New Password"
-                    value={password}
-                    onChange={setPassword}
-                    show={showPw}
-                    setShow={setShowPw}
-                    error={errors.password}
+                  <Field
+                    id="resetEmail"
+                    label="Email"
+                    icon={<Mail className="h-4 w-4" />}
+                    type="email"
+                    value={email}
+                    onChange={setEmail}
+                    error={errors.email}
+                    placeholder="you@example.com"
                   />
-                  <PasswordField
-                    id="confirmNewPassword"
-                    label="Confirm Password"
-                    value={confirmPassword}
-                    onChange={setConfirmPassword}
-                    show={showPw}
-                    setShow={setShowPw}
-                    error={errors.confirmPassword}
-                  />
-                  <SubmitButton loading={loading}>Reset Password</SubmitButton>
+                  {recovery && (
+                    <>
+                      <PasswordField
+                        id="newPassword"
+                        label="New Password"
+                        value={password}
+                        onChange={setPassword}
+                        show={showPw}
+                        setShow={setShowPw}
+                        error={errors.password}
+                      />
+                      <PasswordField
+                        id="confirmNewPassword"
+                        label="Confirm Password"
+                        value={confirmPassword}
+                        onChange={setConfirmPassword}
+                        show={showPw}
+                        setShow={setShowPw}
+                        error={errors.confirmPassword}
+                      />
+                    </>
+                  )}
+                  <SubmitButton loading={loading}>
+                    {recovery ? "Reset Password" : "Send reset link"}
+                  </SubmitButton>
                   <p className="text-center text-sm text-muted-foreground">
                     Remembered it?{" "}
                     <button
