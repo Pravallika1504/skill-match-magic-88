@@ -227,7 +227,7 @@ function AuthPage() {
                   {tab === "signup"
                     ? "Free forever plan — no card required."
                     : tab === "forgot"
-                      ? "We'll email you a secure reset link."
+                      ? "Enter and confirm your new password."
                       : "Sign in to continue screening resumes."}
                 </p>
               </div>
