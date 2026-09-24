@@ -377,17 +377,25 @@ function AuthPage() {
 
               {tab === "forgot" && (
                 <form onSubmit={onForgot} className="space-y-4">
-                  <Field
-                    id="email"
-                    label="Email"
-                    icon={<Mail className="h-4 w-4" />}
-                    type="email"
-                    value={email}
-                    onChange={setEmail}
-                    error={errors.email}
-                    placeholder="you@example.com"
+                  <PasswordField
+                    id="newPassword"
+                    label="New Password"
+                    value={password}
+                    onChange={setPassword}
+                    show={showPw}
+                    setShow={setShowPw}
+                    error={errors.password}
                   />
-                  <SubmitButton loading={loading}>Send reset link</SubmitButton>
+                  <PasswordField
+                    id="confirmNewPassword"
+                    label="Confirm Password"
+                    value={confirmPassword}
+                    onChange={setConfirmPassword}
+                    show={showPw}
+                    setShow={setShowPw}
+                    error={errors.confirmPassword}
+                  />
+                  <SubmitButton loading={loading}>Reset Password</SubmitButton>
                   <p className="text-center text-sm text-muted-foreground">
                     Remembered it?{" "}
                     <button
